@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="dao.board">	<!-- package.filename -->
+
+	<select id="selectBoardList" resultType="dto.BoardDTO">
+		SELECT NO, AUTHOR, TITLE, HIT, POSTDATE
+	      FROM BOARD
+	</select>
+	
+	<select id="selectMaxHit" resultType="dto.BoardDTO">
+		SELECT TITLE, CONTENT, HIT
+		  FROM BOARD
+		 WHERE HIT = (SELECT MAX(HIT)
+		 				FROM BOARD)
+	</select>
+	
+	<select id="getTotalCount" resultType="int">
+		SELECT COUNT(*)
+		  FROM BOARD
+	</select>
+
+
+	<insert id="insertBoard" parameterType="dto.BoardDTO">
+		INSERT INTO	BOARD
+		VALUES (BOARD_SEQ.NEXTVAL, #{author}, #{title}, #{content}, 0, #{ip}, SYSDATE)
+	</insert>
+
+
+	<select id="selectBoardByNo" parameterType="Long" resultType="dto.BoardDTO">
+		SELECT NO, AUTHOR, TITLE, CONTENT, HIT, IP, POSTDATE
+	      FROM BOARD
+	     WHERE NO = #{no}
+	</select>
+	
+	<update id="updateBoardHit" parameterType="Long">
+		UPDATE BOARD
+		   SET HIT = HIT + 1
+		 WHERE NO = #{no}
+	</update>
+	
+	<insert id="insertReply" parameterType="dto.ReplyDTO">
+		INSERT INTO	REPLY
+		VALUES (REPLY_SEQ.NEXTVAL, #{author}, #{content}, #{ip}, #{board_no}, SYSDATE)
+	</insert>
+	
+	<select id="selectReplyList" parameterType="Long" resultType="dto.ReplyDTO">
+		SELECT NO, AUTHOR, CONTENT, IP, BOARD_NO, POSTDATE
+		  FROM REPLY
+		 WHERE board_no = #{no}
+	</select>
+	
+	<delete id="deleteBoard" parameterType="Long">
+		DELETE
+		  FROM BOARD
+		 WHERE no = #{no}
+	</delete>
+
+</mapper>
